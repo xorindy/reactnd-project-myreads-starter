@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 class Book extends Component {
   render() {
-    let displayThumbnail = this.props.imageLinks ? this.props.imageLinks.thumbnail : '';
+    let displayThumbnail = this.props.book.imageLinks ? this.props.book.imageLinks.thumbnail : ' ';
     
   	return (
     	<div className="book">
