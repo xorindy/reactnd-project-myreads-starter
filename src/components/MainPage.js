@@ -8,9 +8,9 @@ class MainPage extends React.Component {
   //State is an empty array for books
   constructor(props) {
     super(props);
-    this.state = {
-      books: []
-    }
+      this.state = {
+        books: []
+      }
   }
 
   //Get all the books from BooksAPI and place it on a bookList Array,
@@ -20,6 +20,17 @@ class MainPage extends React.Component {
     .then(bookList => {
       this.setState({ books: bookList });
     });
+  }
+
+  //Update the current shelf to move books around
+  changeShelf = (book, shelf)  => {
+    BooksAPI.update(book, shelf)
+            .then(response => {
+              book.shelf = shelf
+              this.setState(state => ({
+                books: state.books.filter(b => b.id !== book.id).concat([book])
+              }))
+            })
   }
 
   render() {
@@ -35,9 +46,9 @@ class MainPage extends React.Component {
           //Get shelves from our shelf component
         }
           <div>
-            <Shelf name="Currently Reading" books={this.state.books.filter(b => b.shelf === 'currentlyReading')}/>
-            <Shelf name="Want To Read" books={this.state.books.filter(b => b.shelf === 'wantToRead')}/>
-            <Shelf name="Read" books={this.state.books.filter(b => b.shelf === 'read')}/>
+            <Shelf changeShelf={this.changeShelf} name="Currently Reading" books={this.state.books.filter(b => b.shelf === 'currentlyReading')}/>
+            <Shelf changeShelf={this.changeShelf} name="Want To Read" books={this.state.books.filter(b => b.shelf === 'wantToRead')}/>
+            <Shelf changeShelf={this.changeShelf} name="Read" books={this.state.books.filter(b => b.shelf === 'read')}/>
           </div>
 
           <div className="open-search">
