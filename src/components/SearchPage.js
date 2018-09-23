@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import * as BooksAPI from '../BooksAPI'
+import Book from './Book'
 
 class SearchPage extends React.Component {
 
@@ -9,7 +10,8 @@ class SearchPage extends React.Component {
     super(props);
       this.state = {
         books: [],
-        bookQuery: []
+        bookQuery: [],
+        query: ''
       }
   }
 
@@ -21,6 +23,7 @@ class SearchPage extends React.Component {
       this.setState({ books: bookList });
     });
   }
+
   //Update the current shelf to move books around
   changeShelf = (book, shelf)  => {
     BooksAPI.update(book, shelf)
@@ -32,6 +35,27 @@ class SearchPage extends React.Component {
             })
   }
 
+  //Update query as user is typing
+  updateQuery = (query) => {
+    this.setState({ query }, this.searchQuery)
+  }
+
+  searchQuery() {
+    //If the query is empty or undefined, empty out bookQuery and input field
+    if (this.state.query === '' || this.state.query === undefined) {
+      return this.setState({ bookQuery: [], query: '' })
+    }
+    //Search from the BooksAPI, as the user types words
+    BooksAPI.search(this.state.query).then(results => {
+      if (results.error) { //If it finds nothing, don't show anything
+        return this.setState({ bookQuery: [] })
+      }
+      else { //Otherwise, show results
+        return this.setState({ bookQuery: results })
+      }
+    })
+  }
+
   render() {
       return (
       	<div className="search-books">
@@ -40,14 +64,16 @@ class SearchPage extends React.Component {
             <div className="search-books-input-wrapper">
               <input 
 				        type="text" 
-				        placeholder="Search by title or author"
-				        onChange={(event) => this.updateQuery(event.target.value)}
-			        />
+                placeholder="Search by title or author"
+                Value={this.state.query}
+				        onChange={(event) => this.updateQuery(event.target.value)} />
             </div>
           </div>
 		      <div className="search-books-results">
         	  <ol className="books-grid">
-
+              {
+                this.state.bookQuery.map((item, key) => <Book key={ key } book={ item } />)
+              }
 			      </ol>
           </div>
         </div>
