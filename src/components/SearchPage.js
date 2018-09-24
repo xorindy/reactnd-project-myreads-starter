@@ -43,7 +43,7 @@ class SearchPage extends React.Component {
   searchQuery() {
     //If the query is empty or undefined, empty out bookQuery and input field
     if (this.state.query === '' || this.state.query === undefined) {
-      return this.setState({ bookQuery: [], query: '' })
+      return this.setState({ bookQuery: [] })
     }
     //Search from the BooksAPI, as the user types words
     BooksAPI.search(this.state.query).then(results => {
@@ -51,6 +51,10 @@ class SearchPage extends React.Component {
         return this.setState({ bookQuery: [] })
       }
       else { //Otherwise, show results
+        results.forEach(b => {
+          let i = this.state.books.filter(B => B.id === b.id)
+          if(i[0]) { b.shelf = i[0].shelf }
+        })
         return this.setState({ bookQuery: results })
       }
     })
@@ -72,7 +76,7 @@ class SearchPage extends React.Component {
 		      <div className="search-books-results">
         	  <ol className="books-grid">
               {
-                this.state.bookQuery.map((item, key) => <Book key={ key } book={ item } />)
+                this.state.bookQuery.map((item, key) => <Book changeShelf={this.changeShelf} key={ key } book={ item } />)
               }
 			      </ol>
           </div>
